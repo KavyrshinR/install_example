@@ -13,6 +13,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.InputStream
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,10 +58,41 @@ class MainActivity : AppCompatActivity() {
             val uri = data?.data ?: return
 
 //            install(contentResolver.openInputStream(uri) ?: return)
-            xiaomiInstall(uri)
+
+            val targetFile = simulateDownload(uri)
+
+//            try {
+//                StrictMode::class.java.getMethod("disableDeathOnFileUriExposure").invoke(null)
+//            } catch (e: Throwable) {
+//                // ignore
+//            }
+
+            val exposedUri = Uri.fromFile(targetFile)
+
+            val grantedUri = MediaFileProvider.getUriForFile(this, MediaFileProvider.AUTHORITIES, targetFile)
+
+            Log.d(LOG_TAG, "\n Source: ${uri} \n Exposed: ${exposedUri} \n Granted: ${grantedUri}")
+
+            xiaomiInstall(grantedUri)
         }
 
         Log.d(LOG_TAG, data.toString())
+    }
+
+    private fun simulateDownload(uri: Uri): File {
+        val externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: throw Exception("No have directory")
+        externalFilesDir.mkdirs()
+        val targetFile = File(externalFilesDir, "temp.apk")
+
+        val inputStream = contentResolver.openInputStream(uri) ?: throw Exception()
+
+        targetFile.outputStream().use { output ->
+            inputStream.use { input ->
+                input.copyTo(output)
+            }
+        }
+
+        return targetFile
     }
 
     private fun xiaomiInstall(uri: Uri) {
