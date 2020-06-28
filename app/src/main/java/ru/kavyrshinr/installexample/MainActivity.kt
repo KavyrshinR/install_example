@@ -64,12 +64,6 @@ class MainActivity : AppCompatActivity() {
 
             val targetFile = simulateDownload(uri)
 
-//            try {
-//                StrictMode::class.java.getMethod("disableDeathOnFileUriExposure").invoke(null)
-//            } catch (e: Throwable) {
-//                // ignore
-//            }
-
             val exposedUri = Uri.fromFile(targetFile)
 
             val grantedUri = MediaFileProvider.getUriForFile(this, MediaFileProvider.AUTHORITIES, targetFile)
