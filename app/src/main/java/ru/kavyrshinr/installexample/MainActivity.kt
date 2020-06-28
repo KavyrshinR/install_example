@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d(LOG_TAG, "Request code: ${requestCode} Result code ${resultCode}")
+        Log.d(LOG_TAG, "Data: " + data.toString())
+
         if (resultCode != Activity.RESULT_OK) {
             return
         }
@@ -75,8 +78,6 @@ class MainActivity : AppCompatActivity() {
 
             xiaomiInstall(grantedUri)
         }
-
-        Log.d(LOG_TAG, data.toString())
     }
 
     private fun simulateDownload(uri: Uri): File {
